@@ -4,13 +4,25 @@ import signal
 import subprocess
 import ptrace.debugger as debugger
 import ptrace
+from mutation_engine import mutate
+import time
 
 NUM_OF_RUNS = 10
 
 config = {
-    "file": "data/test.jpg",
+    "file": "data/mutated.jpg",
+    "source": "data/test.jpg",
     "target": ""
 }
+
+def create_mutation():
+    with open(config["source"], "rb") as f:
+        data = f.readlines()
+
+    data = mutate(data)
+    with open(config["file"], "wb") as f:
+        f.writelines(data)
+    return data
 
 
 def execute_fuzz(dbg, data, i):
@@ -28,15 +40,17 @@ def execute_fuzz(dbg, data, i):
         with open("crashes/crash.{}.jpg".format(i), "wb+") as fh:
             fh.write(data)
 
+
 def fuzz():
     dbg = ptrace.debugger.PtraceDebugger()
 
     i = 0
     while NUM_OF_RUNS > i:
         i += 1
-        data = mutate()
-        execute_fuzz(dbg, data,i)
-
+        # data = create_mutation()
+        # execute_fuzz(dbg, data, i)
+        print(i, end="\r")
+        time.sleep(1)
 
 def update_config(args):
     config["target"] = args.target
@@ -50,9 +64,6 @@ def main():
     update_config(args)
     fuzz()
 
-
-def mutate():
-    return None
 
 if __name__ == "__main__":
     main()
