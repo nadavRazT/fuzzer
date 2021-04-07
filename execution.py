@@ -5,10 +5,11 @@ import subprocess
 import ptrace.debugger as debugger
 import ptrace
 from mutation_engine import mutate
-import time
 import threading
+import time
+import visual_data as vd
 
-# total number of runs
+
 NUM_OF_RUNS = 10000
 
 # total number of cases
@@ -16,6 +17,7 @@ cases = 0
 
 # start time
 start = time.time()
+
 
 # parser configuration
 config = {
@@ -37,8 +39,8 @@ def create_mutation():
 
 def execute_fuzz(dbg, data, i):
     cmd = [config["target"], config["file"]]
-    # pid = debugger.child.createChild(cmd, no_stdout=True, env=None)
-    p = subprocess.Popen(cmd, stdout=False, shell=True)
+    # pid = debugger.child.createChild(cmd, no_stdout=False, env=None)
+    p = subprocess.Popen(cmd, stderr=False, stdout=subprocess.DEVNULL)
     pid = p.pid
     try:
         process = dbg.addProcess(pid, is_attached=False)
@@ -53,7 +55,7 @@ def execute_fuzz(dbg, data, i):
             fh.write(data)
 
 
-def fuzz_loop():
+def fuzz():
     global cases, start
     dbg = ptrace.debugger.PtraceDebugger()
 
@@ -61,21 +63,16 @@ def fuzz_loop():
         cases += 1
         data = create_mutation()
         execute_fuzz(dbg, data, cases)
-        elapsed = time.time() - start
 
-        rate = cases / elapsed
         if cases % 10 == 0:
-            min_elapsed = int(elapsed // 60)
-            sec_elapsed = int(elapsed) % 60
-            sys.stdout.write('\r' + f"[{min_elapsed} mins :{sec_elapsed} secs] case [{cases:10}] | {rate:10.2f} cps |"
-                                    f" {threading.activeCount()} threads")
+            vd.print_data(cases, start)
+            # vd.print_data_pycharm(cases, start)
 
 
-def fuzz():
+def fuzz_thread():
     global start, cases
-    fuzz_loop()
-    # for i in range(4):
-    #     threading.Thread(target=fuzz_loop).start()
+    for i in range(4):
+        threading.Thread(target=fuzz).start()
 
 
 def update_config(args):

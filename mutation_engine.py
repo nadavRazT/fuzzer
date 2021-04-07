@@ -3,7 +3,7 @@ import random
 import sys
 import time
 
-FLIP_RATIO = 0.1
+FLIP_RATIO = 0.3
 
 
 def mutate(data):
