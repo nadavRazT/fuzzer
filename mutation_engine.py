@@ -1,7 +1,9 @@
 import numpy as np
 import random
+import sys
+import time
 
-FLIP_RATIO = 0.01
+FLIP_RATIO = 0.1
 
 
 def mutate(data):
@@ -15,11 +17,16 @@ def mutate(data):
 def bit_flip(byte):
     if not byte:
         return
-    return bxor(bytes(random.choice([1,2,4,8,16,32,64,128])), byte)
+    r = random.choice([1,2,4,8,16,32,64,128])
+    return b_i_xor(byte, r)
 
 
-def bxor(b1, b2):
-    return bytes([_a ^ _b for _a, _b in zip(b1, b2)])
+
+def b_i_xor(b1, i1):
+    b1 = b1[:len(str(i1))]
+    int_key = int.from_bytes(b1, sys.byteorder)
+    int_enc = i1 ^ int_key
+    return int_enc.to_bytes(len(str(i1)), sys.byteorder)
 
 if __name__ == "__main__":
     file = open("data/test.jpg", "rb")

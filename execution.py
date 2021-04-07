@@ -7,7 +7,7 @@ import ptrace
 from mutation_engine import mutate
 import time
 
-NUM_OF_RUNS = 10
+NUM_OF_RUNS = 10000
 
 config = {
     "file": "data/mutated.jpg",
@@ -27,10 +27,12 @@ def create_mutation():
 
 def execute_fuzz(dbg, data, i):
     cmd = [config["target"], config["file"]]
-    pid = debugger.child.createChild(cmd, no_stdout=True, env=None)
-    process = dbg.addProcess(pid, True)
-    process.cont()
+    # pid = debugger.child.createChild(cmd, no_stdout=True, env=None)
+    p = subprocess.Popen(cmd, stdout=False, shell=True)
+    pid = p.pid
     try:
+        process = dbg.addProcess(pid, is_attached=False)
+        process.cont()
         sig = process.waitSignals()
     except:
         return
@@ -47,10 +49,10 @@ def fuzz():
     i = 0
     while NUM_OF_RUNS > i:
         i += 1
-        # data = create_mutation()
-        # execute_fuzz(dbg, data, i)
-        print(i, end="\r")
-        time.sleep(1)
+        data = create_mutation()
+        execute_fuzz(dbg, data, i)
+        if(i % 100 == 0):
+            sys.stdout.write('\r' + str(i))
 
 def update_config(args):
     config["target"] = args.target
