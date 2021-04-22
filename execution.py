@@ -4,16 +4,17 @@ import signal
 import subprocess
 import ptrace.debugger as debugger
 import ptrace
-from mutation_engine import mutate
+from mutation_engine import create_mutation
 import threading
 import time
 import visual_data as vd
 
 
-NUM_OF_RUNS = 10000
+NUM_OF_RUNS = 1
 
 # total number of cases
 cases = 0
+crashes = 0
 
 # start time
 start = time.time()
@@ -27,46 +28,40 @@ config = {
 }
 
 
-def create_mutation():
-    with open(config["source"], "rb") as f:
-        data = f.readlines()
-
-    data = mutate(data)
-    with open(config["file"], "wb") as f:
-        f.writelines(data)
-    return data
-
 
 def execute_fuzz(dbg, data, i):
+    global crashes
     cmd = [config["target"], config["file"]]
     # pid = debugger.child.createChild(cmd, no_stdout=False, env=None)
-    p = subprocess.Popen(cmd, stderr=False, stdout=subprocess.DEVNULL)
+    p = subprocess.Popen(cmd, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
     pid = p.pid
     try:
         process = dbg.addProcess(pid, is_attached=False)
         process.cont()
-        sig = process.waitSignals()
+        sig = dbg.waitProcessEvent()
         dbg.deleteProcess(process, pid)
     except:
         return
     if sig.signum == signal.SIGSEGV:
-        process.detach()
-        with open("crashes/crash.{}.jpg".format(i), "wb+") as fh:
-            fh.write(data)
+        crashes += 1
+        with open("crashes/crash.{}.jpg".format(crashes), "wb+") as fh:
+            fh.writelines(data)
+
+    process.detach()
 
 
 def fuzz():
-    global cases, start
+    global cases, start, crashes
     dbg = ptrace.debugger.PtraceDebugger()
 
     while True:
         cases += 1
-        data = create_mutation()
+        data = create_mutation(config)
         execute_fuzz(dbg, data, cases)
 
         if cases % 10 == 0:
-            vd.print_data(cases, start)
-            # vd.print_data_pycharm(cases, start)
+            vd.print_data(cases, start, crashes)
+            # vd.print_data_pycharm(cases, start, crashes)
 
 
 def fuzz_thread():
@@ -85,6 +80,7 @@ def main():
                         required=True)
     args = parser.parse_args()
     update_config(args)
+    # fuzz_thread()
     fuzz()
 
 

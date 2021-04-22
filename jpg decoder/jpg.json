@@ -1,0 +1,65 @@
+{
+  "SOS": "",
+  "APP1": {
+    "APP1 Marker": "",
+    "APP1 Size": "",
+    "Exif Header": "",
+    "TIFF Header": {
+      "Byte align": "",
+      "Tag mark": "",
+      "Link": ""
+    },
+    "IFD": {
+      "IFD0": {
+        "Directory": {
+          "Directory number": "",
+          "Entries": [
+            {
+              "Tag number": "",
+              "data format": "",
+              "component num": "",
+              "data value": ""
+            }
+          ],
+          "IFD offset": ""
+        },
+        "Link": "",
+        "Data": ""
+      },
+      "SubIFD": {
+        "Directory": {
+          "Directory number": "",
+          "Entries": [
+            {
+              "Tag number": "",
+              "data format": "",
+              "component num": "",
+              "data value": ""
+            }
+          ],
+          "IFD offset": ""
+        },
+        "Link": "",
+        "Data": ""
+      },
+      "IDF1": {
+        "Directory": {
+          "Directory number": "",
+          "Entries": [
+            {
+              "Tag number": "",
+              "data format": "",
+              "component num": "",
+              "data value": ""
+            }
+          ],
+          "IFD offset": ""
+        },
+        "Link": "",
+        "Data": ""
+      },
+      "Thumbnail image": ""
+    }
+  }
+}
+
