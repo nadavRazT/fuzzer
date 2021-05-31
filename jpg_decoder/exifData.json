@@ -1,0 +1,55 @@
+{
+  "ExifTags": {
+    "ExifOffset": "8769"
+  },
+  "DataFormat": {
+    "1": {
+      "size": 1,
+      "type": "unsigned_byte"
+    },
+    "2": {
+      "size": 1,
+      "type": "ascii_strings"
+    },
+    "3": {
+      "size": 2,
+      "type": "unsigned_short"
+    },
+    "4": {
+      "size": 4,
+      "type": "unsigned_long"
+    },
+    "5": {
+      "size": 8,
+      "type": "unsigned_rational"
+    },
+    "6": {
+      "size": 1,
+      "type": "signed_byte"
+    },
+    "7": {
+      "size": 1,
+      "type": "undefined"
+    },
+    "8": {
+      "size": 2,
+      "type": "signed_short"
+    },
+    "9": {
+      "size": 4,
+      "type": "signed_long"
+    },
+    "10": {
+      "size": 8,
+      "type": "signed_rational"
+    },
+    "11": {
+      "size": 4,
+      "type": "single_float"
+    },
+    "12": {
+      "size": 8,
+      "type": "double_float"
+    }
+  }
+}

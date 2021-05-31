@@ -4,11 +4,10 @@ import signal
 import subprocess
 import ptrace.debugger as debugger
 import ptrace
-from mutation_engine import create_mutation
 import threading
 import time
 import visual_data as vd
-
+from Mutator import Mutator
 
 NUM_OF_RUNS = 1
 
@@ -19,14 +18,12 @@ crashes = 0
 # start time
 start = time.time()
 
-
 # parser configuration
 config = {
     "file": "data/mutated.jpg",
     "source": "data/test.jpg",
     "target": ""
 }
-
 
 
 def execute_fuzz(dbg, data, i):
@@ -39,6 +36,7 @@ def execute_fuzz(dbg, data, i):
         process = dbg.addProcess(pid, is_attached=False)
         process.cont()
         sig = dbg.waitProcessEvent()
+        # sig = dbg.waitSignals()
         dbg.deleteProcess(process, pid)
     except:
         return
@@ -46,17 +44,16 @@ def execute_fuzz(dbg, data, i):
         crashes += 1
         with open("crashes/crash.{}.jpg".format(crashes), "wb+") as fh:
             fh.writelines(data)
-
     process.detach()
 
 
 def fuzz():
     global cases, start, crashes
     dbg = ptrace.debugger.PtraceDebugger()
-
+    mutator = Mutator(config)
     while True:
         cases += 1
-        data = create_mutation(config)
+        data = mutator.mutate()
         execute_fuzz(dbg, data, cases)
 
         if cases % 10 == 0:
